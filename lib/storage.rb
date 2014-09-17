@@ -15,11 +15,11 @@ module Storage
     raise Missing, path
   end
 
-  def self.put(git, path, data, encoding)
+  def self.put(git, path, data)
     obj = FileObject.new(git.dir.path, path)
 
     Directories.put(obj)
-    Files.put(obj, data, encoding)
+    Files.put(obj, data)
 
     return obj
   rescue Errno::EEXIST
@@ -31,12 +31,10 @@ module Storage
       return obj
     end
 
-    def self.put(obj, data, encoding)
+    def self.put(obj, data)
       raise Exists, obj.fullpath if File.directory?(obj.fullpath)
 
-      # TODO: we need to be able to grab this through
-      # the request. For now we hard code to base64
-      obj.set_content(encoding, data)
+      obj.content = data
     end
   end
 
