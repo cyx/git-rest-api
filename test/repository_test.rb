@@ -12,6 +12,14 @@ require "uri"
 #
 class RepositoryTest < Test::Unit::TestCase
   def setup
+    @config_ru = (<<-EOT).gsub(/^ {6}/, '')
+      app = lambda do |env|
+        [200, { 'Content-Type' => 'text/plain' }, ['Hello World']]
+      end
+
+      run app
+    EOT
+
     # For speed of testing, we use a local repository. During
     # production everything should just work minus the api key
     # author scraping that will potentially grab the author email.
@@ -44,19 +52,14 @@ class RepositoryTest < Test::Unit::TestCase
     assert_equal expected_md5,
       Digest::MD5.hexdigest(obj.content)
 
-    dict = obj.to_hash("base64")
+    dict = obj.to_hash
 
     assert_equal dict[:type], "file"
-    assert_equal dict[:encoding], "base64"
     assert_equal dict[:size], 96
     assert_equal dict[:name], "config.ru"
     assert_equal dict[:path], "config.ru"
 
-    base64 = "YXBwID0gbGFtYmRhIGRvIHxlbnZ8CiAgWzIwMCwgey" \
-      "AnQ29udGVudC1UeXBl\nJyA9PiAndGV4dC9wbGFpbicgfSwgW" \
-      "ydIZWxsbyBXb3JsZCddXQplbmQKCnJ1\nbiBhcHAK\n"
-
-    assert_equal base64, dict[:content]
+    assert_equal @config_ru, dict[:content]
   end
 
   def test_get_missing
@@ -75,7 +78,6 @@ class RepositoryTest < Test::Unit::TestCase
 
     expected = [{
       type: "file",
-      encoding: "base64",
       content: "",
       size: 0,
       name: "sample.rb",
@@ -86,21 +88,20 @@ class RepositoryTest < Test::Unit::TestCase
   end
 
   def test_put_file_OK
-    base64 = "YXBwID0gbGFtYmRhIGRvIHxlbnZ8CiAgWzIwMCwgey" \
-      "AnQ29udGVudC1UeXBl\nJyA9PiAndGV4dC9wbGFpbicgfSwgW" \
-      "ydIZWxsbyBXb3JsZCddXQplbmQKCnJ1\nbiBhcHAK\n"
-
     params = {
-      "data" => base64,
-      "encoding" => "base64",
+      "data" => @config_ru,
       "commit_message" => "Added README"
     }
 
     obj = Repository.put(@uri, "README", params)
 
-    assert_equal obj.to_hash("base64"),
-      Repository.get(@uri, "README").to_hash("base64")
+    assert_equal obj.to_hash[:size],
+      Repository.get(@uri, "README").to_hash[:size]
+
+    assert_equal obj.to_hash,
+      Repository.get(@uri, "README").to_hash
   end
+
 
   # File existing and you try to overwrite that indirectly
   # by an overlapping path
@@ -108,7 +109,6 @@ class RepositoryTest < Test::Unit::TestCase
   def test_put_file_overlapping
     params = {
       "data" => "",
-      "encoding" => "base64",
       "commit_message" => "Added foo"
     }
 
@@ -123,7 +123,6 @@ class RepositoryTest < Test::Unit::TestCase
   def test_put_file_overlapping_with_dir
     params = {
       "data" => "",
-      "encoding" => "base64",
       "commit_message" => "Added foo"
     }
 

@@ -25,10 +25,9 @@ module Repository
     git = open(uri)
 
     data = params.fetch("data")
-    encoding = params.fetch("encoding")
     commit_message = params.fetch("commit_message")
 
-    obj = Storage.put(git, path, data, encoding)
+    obj = Storage.put(git, path, data)
 
     git.add(path)
 
@@ -74,8 +73,10 @@ private
 
   # FIXME : This function is only good for master,
   # maybe later on we want to handle different branches.
-  def self.pull(path)
+  def self.pull(path, branch = "master")
     Git.open(path).tap do |g|
+      g.branch(branch).checkout
+
       begin
         g.pull
       rescue Git::GitExecuteError => err
@@ -87,8 +88,12 @@ private
     end
   end
 
-  def self.clone(uri, name)
-    Git.clone(uri, name, path: TMP)
+  def self.clone(uri, name, branch = "master")
+    git = Git.clone(uri, name, path: TMP)
+    git.branch(branch).checkout
+
+    return git
+
   rescue Git::GitExecuteError => err
     if err.message =~ /Invalid credentials provided/
       raise Forbidden

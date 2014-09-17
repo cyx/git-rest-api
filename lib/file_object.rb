@@ -1,4 +1,3 @@
-require "base64"
 require "json"
 
 class FileObject
@@ -18,9 +17,9 @@ class FileObject
     File.read(fullpath)
   end
 
-  def set_content(encoding, data)
+  def content=(data)
     File.open(fullpath, "w") do |f|
-      f.write(decode(encoding, data))
+      f.write(data)
     end
   end
 
@@ -29,43 +28,16 @@ class FileObject
   end
 
   def to_json(*args)
-    to_hash("base64").to_json(*args)
+    to_hash.to_json(*args)
   end
 
-  def to_hash(encoding)
+  def to_hash
     {
       type: stat.ftype,
-      encoding: encoding,
-      content: encode(encoding),
+      content: content,
       size: stat.size,
       name: File.basename(path),
       path: path,
     }
   end
-
-  def encode(encoding)
-    ENCODING[encoding].encode(content)
-  end
-
-  def decode(encoding, data)
-    ENCODING[encoding].decode(data)
-  end
-
-  module UnknownEncoding
-    def self.encode(str)
-      raise "Unknown encoding"
-    end
-
-    def self.decode(str)
-      raise "Unknown encoding"
-    end
-  end
-
-  module Base64Encoding
-    def self.encode(str) Base64.encode64(str) end
-    def self.decode(str) Base64.decode64(str) end
-  end
-
-  ENCODING = Hash.new { |h,k| h[k] = UnknownEncoding }
-  ENCODING["base64"] = Base64Encoding
 end
