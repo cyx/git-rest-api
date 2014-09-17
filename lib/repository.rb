@@ -14,9 +14,8 @@ module Repository
 
   def self.get(uri, path)
     git = open(uri)
-    dst = File.join(git.dir.path, path)
 
-    Storage.get(dst)
+    Storage.get(git, path)
   end
 
   def self.post(uri, params)

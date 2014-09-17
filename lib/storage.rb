@@ -3,25 +3,25 @@ require_relative "file_object"
 module Storage
   Missing = Class.new(StandardError)
 
-  def self.get(path)
-    stat = File.stat(path)
+  def self.get(git, path)
+    obj = FileObject.new(git.dir.path, path)
 
-    TYPE[stat.ftype].get(path)
+    TYPE[obj.stat.ftype].get(obj)
 
   rescue Errno::ENOENT
     raise Missing, path
   end
 
   module Files
-    def self.get(path)
-      FileObject.new(path)
+    def self.get(obj)
+      return obj
     end
   end
 
   module Directories
-    def self.get(path)
-      sanitize(Dir.entries(path)).map do |path|
-        FileObject.new(path)
+    def self.get(obj)
+      sanitize(Dir.entries(obj.fullpath)).map do |path|
+        FileObject.new(obj.dir, path)
       end
     end
 
@@ -34,8 +34,8 @@ module Storage
   module Unknown
     NotImplemented = Class.new(StandardError)
 
-    def self.get(path)
-      raise NotImplemented, "GET %s" % path
+    def self.get(obj)
+      raise NotImplemented, "GET %s/%s" % [obj.dir, obj.path]
     end
   end
 
