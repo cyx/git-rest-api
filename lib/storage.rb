@@ -8,7 +8,8 @@ module Storage
   def self.get(git, path)
     obj = FileObject.new(git.dir.path, path)
 
-    TYPE[obj.stat.ftype].get(obj)
+    strategy = TYPE[obj.stat.ftype]
+    strategy.get(obj)
 
   rescue Errno::ENOENT
     raise Missing, path
@@ -69,6 +70,6 @@ module Storage
 
   # These are predefined types. We can add other types
   # as we need them.
-  TYPE['file'] = Files
-  TYPE['directory'] = Directories
+  TYPE["file"] = Files
+  TYPE["directory"] = Directories
 end
