@@ -21,7 +21,7 @@ module Storage
   module Directories
     def self.get(obj)
       sanitize(Dir.entries(obj.fullpath)).map do |path|
-        FileObject.new(obj.dir, path)
+        FileObject.new(obj.dir, File.join(obj.path, path))
       end
     end
 
