@@ -12,7 +12,10 @@ require "uri"
 #
 class RepositoryTest < Test::Unit::TestCase
   def setup
-    @uri = ENV.fetch("HEROKU_APP_URI")
+    # For speed of testing, we use a local repository. During
+    # production everything should just work minus the api key
+    # author scraping that will potentially grab the author email.
+    @uri = "file://%s" % File.expand_path("../fixture/repo", __FILE__)
   end
 
   def teardown
@@ -20,11 +23,13 @@ class RepositoryTest < Test::Unit::TestCase
   end
 
   def test_get_with_wrong_API_creds
-    uri = URI.parse(@uri)
-    uri.password = "wrong_pass"
+    # This is a real app dummy app I currently have.
+    # By passing in a random API we verify that we get
+    # a proper exception.
+    uri = "https://:wrong_pass@git.heroku.com/boiling-citadel-7602.git"
 
     assert_raise Repository::Forbidden do
-      Repository.get(uri.to_s, "config.ru")
+      Repository.get(uri, "config.ru")
     end
   end
 
