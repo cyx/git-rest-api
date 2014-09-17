@@ -21,7 +21,7 @@ class RepositoryTest < Test::Unit::TestCase
     expected_md5 = '85fce1517d753dfd29094642bc15933b'
 
     assert_equal expected_md5,
-      Digest::MD5.hexdigest(Repository.get(@uri, 'config.ru'))
+      Digest::MD5.hexdigest(Repository.get(@uri, 'config.ru').content)
   end
 
   def test_get_missing
@@ -31,7 +31,7 @@ class RepositoryTest < Test::Unit::TestCase
   end
 
   def test_get_dir
-    assert_equal ['sample.rb'], Repository.get(@uri, 'lib')
+    assert_equal ['sample.rb'], Repository.get(@uri, 'lib').map(&:path)
   end
 end
 

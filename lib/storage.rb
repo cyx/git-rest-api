@@ -1,3 +1,5 @@
+require_relative "file_object"
+
 module Storage
   Missing = Class.new(StandardError)
 
@@ -12,13 +14,15 @@ module Storage
 
   module Files
     def self.get(path)
-      File.read(path)
+      FileObject.new(path)
     end
   end
 
   module Directories
     def self.get(path)
-      sanitize(Dir.entries(path))
+      sanitize(Dir.entries(path)).map do |path|
+        FileObject.new(path)
+      end
     end
 
   private
