@@ -91,6 +91,7 @@ private
   def self.clone(uri, name, branch = "master")
     git = Git.clone(uri, name, path: TMP)
     git.branch(branch).checkout
+    git.pull
 
     return git
 
