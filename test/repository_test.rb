@@ -2,6 +2,7 @@ require_relative "../lib/repository"
 
 require "digest/md5"
 require "test/unit"
+require "uri"
 
 # NOTE: this test is hard coded against my test heroku
 # app, which has a config.ru, Gemfile* by default.
@@ -12,6 +13,19 @@ require "test/unit"
 class RepositoryTest < Test::Unit::TestCase
   def setup
     @uri = ENV.fetch("HEROKU_APP_URI")
+  end
+
+  def teardown
+    system("rm -rf ./tmp/*")
+  end
+
+  def test_get_with_wrong_API_creds
+    uri = URI.parse(@uri)
+    uri.password = "wrong_pass"
+
+    assert_raise Repository::Forbidden do
+      Repository.get(uri.to_s, "config.ru")
+    end
   end
 
   def test_get_existing
@@ -64,5 +78,52 @@ class RepositoryTest < Test::Unit::TestCase
     }]
 
     assert_equal expected.to_json, list.to_json
+  end
+
+  def test_put_file_OK
+    base64 = "YXBwID0gbGFtYmRhIGRvIHxlbnZ8CiAgWzIwMCwgey" \
+      "AnQ29udGVudC1UeXBl\nJyA9PiAndGV4dC9wbGFpbicgfSwgW" \
+      "ydIZWxsbyBXb3JsZCddXQplbmQKCnJ1\nbiBhcHAK\n"
+
+    params = {
+      "data" => base64,
+      "encoding" => "base64",
+      "commit_message" => "Added README"
+    }
+
+    obj = Repository.put(@uri, "README", params)
+
+    assert_equal obj.to_hash("base64"),
+      Repository.get(@uri, "README").to_hash("base64")
+  end
+
+  # File existing and you try to overwrite that indirectly
+  # by an overlapping path
+  # i.e. config.ru exists then you try to commit config.ru/foo
+  def test_put_file_overlapping
+    params = {
+      "data" => "",
+      "encoding" => "base64",
+      "commit_message" => "Added foo"
+    }
+
+    assert_raise Storage::Exists do
+      Repository.put(@uri, "config.ru/foo", params)
+    end
+  end
+
+  # Dir existing and you try to overwrite that indirectly
+  # by an overlapping path
+  # i.e. lib and you try to create a lib file
+  def test_put_file_overlapping_with_dir
+    params = {
+      "data" => "",
+      "encoding" => "base64",
+      "commit_message" => "Added foo"
+    }
+
+    assert_raise Storage::Exists do
+      Repository.put(@uri, "lib", params)
+    end
   end
 end

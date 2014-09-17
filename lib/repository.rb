@@ -10,6 +10,9 @@ require_relative "storage"
 # !! Make it also work for newly created repos
 #
 module Repository
+  Error = Class.new(StandardError)
+  Forbidden = Class.new(Error)
+
   TMP = File.join(Dir.pwd, "tmp")
 
   def self.get(uri, path)
@@ -18,10 +21,25 @@ module Repository
     Storage.get(git, path)
   end
 
-  def self.post(uri, params)
-  end
+  def self.put(uri, path, params)
+    git = open(uri)
 
-  def self.put(uri, params)
+    data = params.fetch("data")
+    encoding = params.fetch("encoding")
+    commit_message = params.fetch("commit_message")
+
+    obj = Storage.put(git, path, data, encoding)
+
+    git.add(path)
+
+    # For the case where the user pushes the same exact
+    # content twice, it should result in a noop.
+    if git.status.changed.any? || git.status.added.any?
+      git.commit(commit_message)
+      git.push
+    end
+
+    return obj
   end
 
 private
@@ -71,6 +89,12 @@ private
 
   def self.clone(uri, name)
     Git.clone(uri, name, path: TMP)
+  rescue Git::GitExecuteError => err
+    if err.message =~ /Invalid credentials provided/
+      raise Forbidden
+    else
+      raise Error
+    end
   end
 
   # TODO: make this extract the details of the user

@@ -18,6 +18,12 @@ class FileObject
     File.read(fullpath)
   end
 
+  def set_content(encoding, data)
+    File.open(fullpath, "w") do |f|
+      f.write(decode("base64", data))
+    end
+  end
+
   def fullpath
     File.join(@dir, @path)
   end
@@ -37,14 +43,29 @@ class FileObject
     }
   end
 
-  # NOTE: This method serves more as a documentation
-  # tool than anything.
   def encode(encoding)
-    case encoding
-    when "base64"
-      Base64.encode64(content)
-    else
-      raise "No other encodings supported yet."
+    ENCODING[encoding].encode(content)
+  end
+
+  def decode(encoding, data)
+    ENCODING[encoding].decode(data)
+  end
+
+  module UnknownEncoding
+    def self.encode(str)
+      raise "Unknown encoding"
+    end
+
+    def self.decode(str)
+      raise "Unknown encoding"
     end
   end
+
+  module Base64Encoding
+    def self.encode(str) Base64.encode64(str) end
+    def self.decode(str) Base64.decode64(str) end
+  end
+
+  ENCODING = Hash.new { |h,k| h[k] = UnknownEncoding }
+  ENCODING["base64"] = Base64Encoding
 end

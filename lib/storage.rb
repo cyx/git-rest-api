@@ -1,7 +1,9 @@
 require_relative "file_object"
 
 module Storage
-  Missing = Class.new(StandardError)
+  Error   = Class.new(StandardError)
+  Missing = Class.new(Error)
+  Exists  = Class.new(Error)
 
   def self.get(git, path)
     obj = FileObject.new(git.dir.path, path)
@@ -12,9 +14,28 @@ module Storage
     raise Missing, path
   end
 
+  def self.put(git, path, data, encoding)
+    obj = FileObject.new(git.dir.path, path)
+
+    Directories.put(obj)
+    Files.put(obj, data, encoding)
+
+    return obj
+  rescue Errno::EEXIST
+    raise Exists, path
+  end
+
   module Files
     def self.get(obj)
       return obj
+    end
+
+    def self.put(obj, data, encoding)
+      raise Exists, obj.fullpath if File.directory?(obj.fullpath)
+
+      # TODO: we need to be able to grab this through
+      # the request. For now we hard code to base64
+      obj.set_content(encoding, data)
     end
   end
 
@@ -23,6 +44,10 @@ module Storage
       sanitize(Dir.entries(obj.fullpath)).map do |path|
         FileObject.new(obj.dir, File.join(obj.path, path))
       end
+    end
+
+    def self.put(obj)
+      FileUtils.mkdir_p(File.dirname(obj.fullpath))
     end
 
   private
