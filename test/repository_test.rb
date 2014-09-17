@@ -52,6 +52,17 @@ class RepositoryTest < Test::Unit::TestCase
   end
 
   def test_get_dir
-    assert_equal ["sample.rb"], Repository.get(@uri, "lib").map(&:path)
+    list = Repository.get(@uri, "lib")
+
+    expected = [{
+      type: "file",
+      encoding: "base64",
+      content: "",
+      size: 0,
+      name: "sample.rb",
+      path: "lib/sample.rb"
+    }]
+
+    assert_equal expected.to_json, list.to_json
   end
 end
