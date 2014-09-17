@@ -20,7 +20,7 @@ class FileObject
 
   def set_content(encoding, data)
     File.open(fullpath, "w") do |f|
-      f.write(decode("base64", data))
+      f.write(decode(encoding, data))
     end
   end
 
