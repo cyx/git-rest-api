@@ -41,6 +41,25 @@ module Repository
     return obj
   end
 
+  def self.del(uri, path, params)
+    git = open(uri)
+
+    obj = Storage.del(git, path)
+
+    git.remove(path)
+
+    # If the user specified a non existent path,
+    # it will result in a noop.
+    if git.status.deleted.any?
+      commit_message = params.fetch("commit_message")
+
+      git.commit(commit_message)
+      git.push
+    end
+
+    return obj
+  end
+
 private
   def self.open(uri)
     # In order to prevent contention between different users,

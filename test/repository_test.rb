@@ -130,4 +130,37 @@ class RepositoryTest < Test::Unit::TestCase
       Repository.put(@uri, "lib", params)
     end
   end
+
+  def test_del_OK
+    # Add foo, which we'll remove.
+    params = {
+      "commit_message" => "Added foo",
+      "data" => ""
+    }
+
+    Repository.put(@uri, "foo", params)
+    Repository.get(@uri, "foo")
+
+    # Remove foo
+    params = {
+      "commit_message" => "Removed foo"
+    }
+
+    Repository.del(@uri, "foo", params)
+
+    assert Storage::Missing do
+      Repository.get(@uri, "foo")
+    end
+  end
+
+  def test_del_missing_file
+    # Remove foo
+    params = {
+      "commit_message" => "Removed foo"
+    }
+
+    assert_raise Storage::Missing do
+      Repository.del(@uri, "foo", params)
+    end
+  end
 end

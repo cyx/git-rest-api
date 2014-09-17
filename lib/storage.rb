@@ -26,6 +26,16 @@ module Storage
     raise Exists, path
   end
 
+  def self.del(git, path)
+    obj = FileObject.new(git.dir.path, path)
+
+    strategy = TYPE[obj.stat.ftype]
+    strategy.del(obj)
+
+  rescue Errno::ENOENT
+    raise Missing, path
+  end
+
   module Files
     def self.get(obj)
       return obj
@@ -35,6 +45,10 @@ module Storage
       raise Exists, obj.fullpath if File.directory?(obj.fullpath)
 
       obj.content = data
+    end
+
+    def self.del(obj)
+      FileUtils.rm(obj.fullpath)
     end
   end
 
@@ -47,6 +61,10 @@ module Storage
 
     def self.put(obj)
       FileUtils.mkdir_p(File.dirname(obj.fullpath))
+    end
+
+    def self.del(obj)
+      FileUtils.rm_r(obj.fullpath)
     end
 
   private
