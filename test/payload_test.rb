@@ -45,4 +45,20 @@ class PayloadTest < Test::Unit::TestCase
       assert_equal({ "unknown_key" => [:not_valid]}, err.errors)
     end
   end
+
+  def test_commit_payload
+    params = {
+      "commit_message" => "",
+    }
+
+    begin
+      Payload::Commit.extract(params)
+
+    rescue Payload::Invalid => e
+      assert_equal({commit_message: [:not_present]}, e.errors)
+
+    else
+      flunk "Expecting Payload::Invalid but got none"
+    end
+  end
 end

@@ -35,4 +35,10 @@ class Payload < Scrivener
       @errors = errors
     end
   end
+
+  class Commit < self
+    def validate
+      assert_present :commit_message
+    end
+  end
 end
