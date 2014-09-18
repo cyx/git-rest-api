@@ -55,7 +55,7 @@ module Storage
   module Directories
     def self.get(obj)
       sanitize(Dir.entries(obj.fullpath)).map do |path|
-        FileObject.new(obj.dir, File.join(obj.path, path))
+        FileObject.new(obj.dir, join(obj.path, path))
       end
     end
 
@@ -70,6 +70,14 @@ module Storage
   private
     def self.sanitize(entries)
       entries.reject { |e| e == '.' || e == '..' }
+    end
+
+    def self.join(head, *tail)
+      if head.to_s.empty?
+        join(*tail)
+      else
+        File.join(head, *tail)
+      end
     end
   end
 
