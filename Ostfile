@@ -1,0 +1,8 @@
+require_relative "server"
+require_relative "workers/put"
+require_relative "workers/delete"
+
+Ost.redis = Redic.new(ENV.fetch("REDIS_URL"))
+
+Ost.run(PUT)
+Ost.run(DELETE)
