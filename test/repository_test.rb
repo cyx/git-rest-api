@@ -79,6 +79,7 @@ class RepositoryTest < Test::Unit::TestCase
     expected = [{
       type: "file",
       content: "",
+      encoding: "base64",
       size: 0,
       name: "sample.rb",
       path: "lib/sample.rb"
