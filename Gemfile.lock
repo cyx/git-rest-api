@@ -1,10 +1,14 @@
 GEM
   remote: https://rubygems.org/
   specs:
+    cuba (3.3.0)
+      rack
     git (1.2.8)
+    rack (1.5.2)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
+  cuba
   git
