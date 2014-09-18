@@ -1,14 +1,18 @@
 GEM
   remote: https://rubygems.org/
   specs:
+    basica (0.0.1)
     cuba (3.3.0)
       rack
     git (1.2.8)
     rack (1.5.2)
+    scrivener (0.2.0)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
+  basica
   cuba
   git
+  scrivener
