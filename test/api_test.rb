@@ -52,7 +52,13 @@ class APITest < Test::Unit::TestCase
 
     # PUT new content
     put url("lib/sample2.rb"), params
-    assert_equal 200, last_response.status
+    assert_equal 202, last_response.status
+
+    job = Job[json_response["id"]]
+
+    assert job
+    _, response = job.wait!
+    assert_equal("lib/sample2.rb", JSON(response)["path"])
 
     # GET and verify
     get url("lib/sample2.rb")
@@ -66,7 +72,12 @@ class APITest < Test::Unit::TestCase
     }
 
     delete url("lib/sample2.rb"), params
-    assert_equal 200, last_response.status
+    assert_equal 202, last_response.status
+
+    job = Job[json_response["id"]]
+
+    assert job
+    job.wait!
 
     get url("lib/sample2.rb")
     assert_equal 404, last_response.status

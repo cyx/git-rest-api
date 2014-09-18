@@ -2,14 +2,30 @@ GEM
   remote: https://rubygems.org/
   specs:
     basica (0.0.1)
+    clap (1.0.0)
     cuba (3.3.0)
       rack
     daemons (1.1.9)
     eventmachine (1.0.3)
     git (1.2.8)
+    hiredis (0.5.2)
+    msgpack (0.5.8)
+    nido (0.0.1)
+    ohm (2.0.1)
+      msgpack
+      nido
+      redic
+    ost (1.0.0)
+      nido
+      redic
+    ost-bin (0.1.1)
+      clap
+      ost
     rack (1.5.2)
     rack-test (0.6.2)
       rack (>= 1.0)
+    redic (1.1.1)
+      hiredis
     requests (1.0.0)
     scrivener (0.2.0)
     thin (1.6.2)
@@ -24,6 +40,9 @@ DEPENDENCIES
   basica
   cuba
   git
+  ohm
+  ost
+  ost-bin
   rack-test
   requests
   scrivener

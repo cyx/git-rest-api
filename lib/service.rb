@@ -1,3 +1,6 @@
+require "ost"
+
+require_relative "job"
 require_relative "payload"
 
 module Service
@@ -11,7 +14,9 @@ module Service
     try do
       payload = Payload.extract(params)
 
-      return 200, Repository.put(uri, path, payload)
+      id = queue(:PUT, [uri, path, payload])
+
+      return 202, { id: id, message: "%s is being processed" }
     end
   end
 
@@ -19,13 +24,20 @@ module Service
     try do
       payload = Payload::Commit.extract(params)
 
-      Repository.del(uri, path, payload)
+      id = queue(:DELETE, [uri, path, payload])
 
-      return 200, {}
+      return 202, { id: id, message: "%s is being processed" }
     end
   end
 
 private
+  def self.queue(name, args)
+    job = Job.generate(*args)
+    Ost[name].push(job.id)
+
+    return job.id
+  end
+
   def self.try
     yield
   rescue Payload::Invalid => err
