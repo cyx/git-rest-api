@@ -74,7 +74,7 @@ module Storage
   end
 
   module Unknown
-    NotImplemented = Class.new(StandardError)
+    NotImplemented = Class.new(Storage::Error)
 
     def self.get(obj)
       raise NotImplemented, "GET %s/%s" % [obj.dir, obj.path]
