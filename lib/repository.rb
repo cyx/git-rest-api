@@ -122,10 +122,14 @@ private
     end
   end
 
-  # TODO: make this extract the details of the user
-  # based on the API key of the URI
   def self.configure(uri, git)
-    git.config('user.name', 'John Doe')
-    git.config('user.email', 'john@example.com')
+    u = URI.parse(uri)
+
+    if u.password
+      account = Heroku.account(u.password)
+
+      git.config("user.name", account["name"] || account["email"])
+      git.config("user.email", account["email"])
+    end
   end
 end
