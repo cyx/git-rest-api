@@ -1,6 +1,7 @@
 require "fileutils"
 require "git"
 require "digest/sha1"
+require "logger"
 
 require_relative "storage"
 
@@ -93,7 +94,7 @@ private
   # FIXME : This function is only good for master,
   # maybe later on we want to handle different branches.
   def self.pull(path, branch = "master")
-    Git.open(path).tap do |g|
+    Git.open(path, log: Logger.new(STDERR)).tap do |g|
       g.branch(branch).checkout
 
       begin
@@ -108,7 +109,7 @@ private
   end
 
   def self.clone(uri, name, branch = "master")
-    git = Git.clone(uri, name, path: TMP)
+    git = Git.clone(uri, name, path: TMP, log: Logger.new(STDERR))
     git.branch(branch).checkout
     git.pull
 
