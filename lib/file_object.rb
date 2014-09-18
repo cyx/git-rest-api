@@ -50,5 +50,13 @@ class FileObject
     def to_json(*args)
       Base64.encode64(@data).to_json(*args)
     end
+
+    def to_s
+      @data
+    end
+
+    # This allows methods like Digest::MD5.hexdigest to work
+    # on this class.
+    alias :to_str :to_s
   end
 end
