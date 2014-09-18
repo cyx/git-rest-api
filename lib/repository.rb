@@ -24,10 +24,10 @@ module Repository
   def self.put(uri, path, params)
     git = open(uri)
 
-    data = params.fetch("data")
+    content = params.fetch("content")
     commit_message = params.fetch("commit_message")
 
-    obj = Storage.put(git, path, data)
+    obj = Storage.put(git, path, content)
 
     git.add(path)
 

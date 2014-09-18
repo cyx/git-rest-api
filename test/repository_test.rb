@@ -59,7 +59,7 @@ class RepositoryTest < Test::Unit::TestCase
     assert_equal dict[:name], "config.ru"
     assert_equal dict[:path], "config.ru"
 
-    assert_equal @config_ru, dict[:content]
+    assert_equal @config_ru, dict[:content].to_s
   end
 
   def test_get_missing
@@ -89,7 +89,7 @@ class RepositoryTest < Test::Unit::TestCase
 
   def test_put_file_OK
     params = {
-      "data" => @config_ru,
+      "content" => @config_ru,
       "commit_message" => "Added README"
     }
 
@@ -98,8 +98,8 @@ class RepositoryTest < Test::Unit::TestCase
     assert_equal obj.to_hash[:size],
       Repository.get(@uri, "README").to_hash[:size]
 
-    assert_equal obj.to_hash,
-      Repository.get(@uri, "README").to_hash
+    assert_equal obj.to_json,
+      Repository.get(@uri, "README").to_json
   end
 
 
@@ -108,7 +108,7 @@ class RepositoryTest < Test::Unit::TestCase
   # i.e. config.ru exists then you try to commit config.ru/foo
   def test_put_file_overlapping
     params = {
-      "data" => "",
+      "content" => "",
       "commit_message" => "Added foo"
     }
 
@@ -122,7 +122,7 @@ class RepositoryTest < Test::Unit::TestCase
   # i.e. lib and you try to create a lib file
   def test_put_file_overlapping_with_dir
     params = {
-      "data" => "",
+      "content" => "",
       "commit_message" => "Added foo"
     }
 
@@ -135,7 +135,7 @@ class RepositoryTest < Test::Unit::TestCase
     # Add foo, which we'll remove.
     params = {
       "commit_message" => "Added foo",
-      "data" => ""
+      "content" => ""
     }
 
     Repository.put(@uri, "foo", params)

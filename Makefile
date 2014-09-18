@@ -1,7 +1,7 @@
 %_test.rb: .PHONY
 	ruby $@
 
-test: test/repository_test.rb
+test: test/repository_test.rb test/payload_test.rb
 
 setup:
 	git submodule update --init
