@@ -5,6 +5,7 @@ gem "git"
 gem "cuba"
 gem "basica"
 gem "scrivener"
+gem "requests"
 
 group :production do
   gem "thin"
