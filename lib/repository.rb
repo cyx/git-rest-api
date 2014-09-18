@@ -36,7 +36,9 @@ module Repository
     # content twice, it should result in a noop.
     if git.status.changed.any? || git.status.added.any?
       git.commit(commit_message)
-      git.push
+
+      $stderr.puts "-----> Pushing to origin master now"
+      git.push("origin", "master")
     end
 
     return obj
@@ -55,7 +57,8 @@ module Repository
       commit_message = params.fetch("commit_message")
 
       git.commit(commit_message)
-      git.push
+      $stderr.puts "-----> Pushing to origin master now"
+      git.push("origin", "master")
     end
 
     return obj
