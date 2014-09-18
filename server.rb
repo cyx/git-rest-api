@@ -34,6 +34,15 @@ Cuba.define do
           status, resp = Service.delete(uri, path, req.params)
           json(status, resp)
         end
+
+        # This is a sort of joke from hipchat yesterday:
+        #
+        # Naaman Newbold: brownie points would be supporting PATCH
+        #
+        on req.patch? do
+          status, resp = Service.put(uri, path, req.params)
+          json(status, resp)
+        end
       end
     end
   end
