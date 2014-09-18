@@ -8,6 +8,8 @@ GEM
     eventmachine (1.0.3)
     git (1.2.8)
     rack (1.5.2)
+    rack-test (0.6.2)
+      rack (>= 1.0)
     scrivener (0.2.0)
     thin (1.6.2)
       daemons (>= 1.0.9)
@@ -21,5 +23,6 @@ DEPENDENCIES
   basica
   cuba
   git
+  rack-test
   scrivener
   thin

@@ -9,3 +9,7 @@ gem "scrivener"
 group :production do
   gem "thin"
 end
+
+group :test do
+  gem "rack-test"
+end
