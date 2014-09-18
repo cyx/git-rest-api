@@ -59,7 +59,7 @@ class RepositoryTest < Test::Unit::TestCase
     assert_equal dict[:name], "config.ru"
     assert_equal dict[:path], "config.ru"
 
-    assert_equal @config_ru, dict[:content]
+    assert_equal @config_ru, dict[:content].to_s
   end
 
   def test_get_missing
@@ -98,8 +98,8 @@ class RepositoryTest < Test::Unit::TestCase
     assert_equal obj.to_hash[:size],
       Repository.get(@uri, "README").to_hash[:size]
 
-    assert_equal obj.to_hash,
-      Repository.get(@uri, "README").to_hash
+    assert_equal obj.to_json,
+      Repository.get(@uri, "README").to_json
   end
 
 
