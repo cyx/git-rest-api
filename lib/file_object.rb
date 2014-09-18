@@ -15,7 +15,12 @@ class FileObject
   end
 
   def content
-    Content.new(File.read(fullpath))
+    case stat.ftype
+    when "file"
+      Content.new(File.read(fullpath))
+    when "directory"
+      ""
+    end
   end
 
   def content=(data)
