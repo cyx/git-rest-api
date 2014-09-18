@@ -9,6 +9,10 @@ via http basic auth.
 
 ## testing
 
+    # in one term
+    ost start
+
+    # in another term
     make test
 
 ## running
