@@ -4,9 +4,15 @@ GEM
     basica (0.0.1)
     cuba (3.3.0)
       rack
+    daemons (1.1.9)
+    eventmachine (1.0.3)
     git (1.2.8)
     rack (1.5.2)
     scrivener (0.2.0)
+    thin (1.6.2)
+      daemons (>= 1.0.9)
+      eventmachine (>= 1.0.0)
+      rack (>= 1.0.0)
 
 PLATFORMS
   ruby
@@ -16,3 +22,4 @@ DEPENDENCIES
   cuba
   git
   scrivener
+  thin
