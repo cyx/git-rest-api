@@ -6,6 +6,9 @@ gem "cuba"
 gem "basica"
 gem "scrivener"
 gem "requests"
+gem "ohm"
+gem "ost"
+gem "ost-bin"
 
 group :production do
   gem "thin"
