@@ -15,11 +15,13 @@ class FileObject
   end
 
   def content
-    case stat.ftype
-    when "file"
-      Content.new(File.read(fullpath))
-    when "directory"
-      ""
+    @_content ||= begin
+      case stat.ftype
+      when "file"
+        Content.new(File.read(fullpath))
+      when "directory"
+        ""
+      end
     end
   end
 
@@ -41,6 +43,7 @@ class FileObject
     {
       type: stat.ftype,
       content: content,
+      encoding: content.encoding,
       size: stat.size,
       name: File.basename(path),
       path: path,
@@ -58,6 +61,10 @@ class FileObject
 
     def to_s
       @data
+    end
+
+    def encoding
+      "base64"
     end
 
     # This allows methods like Digest::MD5.hexdigest to work
