@@ -1,4 +1,5 @@
 require "json"
+require "base64"
 
 class FileObject
   attr :path
@@ -14,7 +15,7 @@ class FileObject
   end
 
   def content
-    File.read(fullpath)
+    Content.new(File.read(fullpath))
   end
 
   def content=(data)
@@ -39,5 +40,15 @@ class FileObject
       name: File.basename(path),
       path: path,
     }
+  end
+
+  class Content
+    def initialize(data)
+      @data = data
+    end
+
+    def to_json(*args)
+      Base64.encode64(@data).to_json(*args)
+    end
   end
 end
