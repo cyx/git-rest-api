@@ -1,7 +1,5 @@
 require "ohm"
 
-Ohm.redis = Redic.new(ENV.fetch("REDIS_URL"))
-
 class Job < Ohm::Model
   attribute :uri
   attribute :path

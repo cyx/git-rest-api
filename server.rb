@@ -6,6 +6,9 @@ require_relative "lib/repository"
 require_relative "lib/heroku"
 require_relative "lib/json_response"
 
+Ohm.redis = Redic.new(ENV.fetch("REDIS_URL"))
+Ost.redis = Redic.new(ENV.fetch("REDIS_URL"))
+
 Cuba.plugin Basica
 Cuba.plugin JSONResponse
 
