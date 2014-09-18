@@ -16,7 +16,7 @@ module Service
 
       id = queue(:PUT, [uri, path, payload])
 
-      return 202, { id: id, message: "%s is being processed" }
+      return 202, { id: id, message: "%s is being processed" % path }
     end
   end
 
@@ -26,7 +26,7 @@ module Service
 
       id = queue(:DELETE, [uri, path, payload])
 
-      return 202, { id: id, message: "%s is being processed" }
+      return 202, { id: id, message: "%s is being processed" % path }
     end
   end
 
