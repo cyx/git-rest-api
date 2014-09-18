@@ -14,7 +14,7 @@ Cuba.define do
     on ":app/repo" do |app|
       uri = Heroku.git_uri(app, api_key)
 
-      on /(.+)/ do |path|
+      on /(.*)/ do |path|
         on get do
           status, resp = Service.get(uri, path)
           json(status, resp)
